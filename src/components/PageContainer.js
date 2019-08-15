@@ -1,18 +1,7 @@
 import React from "react";
-import {
-  Paper,
-  TextField,
-  Button,
-  Checkbox,
-  Typography,
-  Grid,
-  FormControlLabel,
-  FormGroup,
-  CircularProgress,
-  makeStyles,
-  RadioGroup,
-  Radio
-} from "@material-ui/core";
+import { connect } from "react-redux";
+import { pokemonsFetchData, pokemonFetchData } from "../actions/items";
+import { Paper, makeStyles } from "@material-ui/core";
 import pokemonTypes from "../constants/pokemonTypes";
 import HeaderFilter from "./HeaderFilter";
 import TableList from "./TableList";
@@ -25,13 +14,11 @@ const useStyles = makeStyles(theme => ({
 
 const urlGenerator = endpoint => `https://pokeapi.co/api/v2/${endpoint}`;
 
-const PageContainer = () => {
+const PageContainer = ({ fetchData, isLoading: loading, hasError, data }) => {
   const [name, setName] = React.useState("");
   const [searchType, setSearchType] = React.useState("fire");
   const [url, setUrl] = React.useState("https://pokeapi.co/api/v2/pokemon");
-  const [pokemons, setPokemons] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [pagination, setPagination] = React.useState({});
+  const pagination = { next: data.next, previous: data.previous };
   const handleChange = e => setName(e.target.value);
   const handleTypeChange = e => setSearchType(e.target.value);
   const onClickSearch = () => {
@@ -41,21 +28,12 @@ const PageContainer = () => {
   const onClickUpdateList = nextUrl => () => {
     setUrl(nextUrl);
   };
-
   const isTypeFilter = url.indexOf("type") > 0;
-
+  const pokemons = (isTypeFilter ? data.pokemon : data.results) || [];
+  debugger;
   React.useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      const response = await fetch(url);
-      const json = await response.json();
-      setLoading(false);
-      console.log("response", json);
-      setPokemons(isTypeFilter ? json.pokemon : json.results);
-      setPagination({ next: json.next, previous: json.previous });
-    }
-    fetchData();
-  }, [isTypeFilter, url]);
+    fetchData(url);
+  }, [fetchData, url]);
 
   const headerFilterProps = {
     searchType,
@@ -82,4 +60,19 @@ const PageContainer = () => {
   );
 };
 
-export default PageContainer;
+const mapStateToProps = state => ({
+  data: state.pokemons,
+  hasError: state.pokemonsHasError,
+  isLoading: state.pokemonsLoading
+});
+
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchData: url => dispatch(pokemonFetchData(url))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageContainer);
