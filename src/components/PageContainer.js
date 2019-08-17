@@ -1,16 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
-import { pokemonsFetchData, pokemonFetchData } from "../actions/items";
-import { Paper, makeStyles } from "@material-ui/core";
-import pokemonTypes from "../constants/pokemonTypes";
+import { pokemonFetchData } from "../actions/items";
+import { Paper } from "@material-ui/core";
 import HeaderFilter from "./HeaderFilter";
 import TableList from "./TableList";
-
-const useStyles = makeStyles(theme => ({
-  filterContainer: {
-    border: "1px solid black"
-  }
-}));
 
 const urlGenerator = endpoint => `https://pokeapi.co/api/v2/${endpoint}`;
 

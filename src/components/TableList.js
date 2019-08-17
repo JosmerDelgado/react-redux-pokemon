@@ -29,8 +29,8 @@ const TableList = ({
                   ).indexOf(name)
                 : true
             )
-            .map(value => (
-              <Grid item xs={12}>
+            .map((value, keys) => (
+              <Grid test-id="pokemon-list" key={`pokemons${keys}`} item xs={12}>
                 {isTypeFilter
                   ? value && value.pokemon && value.pokemon.name
                   : value.name}

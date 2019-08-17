@@ -33,15 +33,16 @@ const HeaderFilter = ({
       <Grid item xs={12} md={4}>
         <Typography>Type</Typography>
         <RadioGroup row value={searchType} onChange={handleTypeChange}>
-          {pokemonTypes.map(type => (
+          {pokemonTypes.map((type, keys) => (
             <FormControlLabel
+              key={`type${keys}`}
               label={type}
               control={<Radio value={type} name={type} />}
             />
           ))}
         </RadioGroup>
       </Grid>
-      <Grid xs={12} md={3}>
+      <Grid item xs={12} md={3}>
         <Button onClick={onClickSearch}>Search</Button>
       </Grid>
     </Grid>
