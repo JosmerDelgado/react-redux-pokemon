@@ -23,7 +23,6 @@ const PageContainer = ({ fetchData, isLoading: loading, hasError, data }) => {
   };
   const isTypeFilter = url.indexOf("type") > 0;
   const pokemons = (isTypeFilter ? data.pokemon : data.results) || [];
-  debugger;
   React.useEffect(() => {
     fetchData(url);
   }, [fetchData, url]);
