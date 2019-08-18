@@ -1,6 +1,21 @@
+## Tools
+
 ### API
 
 This proyect is ussing [https://pokeapi.co/](https://pokeapi.co/)
+
+### React
+
+Using 16.8^ use the new hooks features
+
+### Redux
+
+This project have the Redux Thunk to handle Async behaviours
+
+### Components and Style
+
+To manage styles and prebuilded component this project<br>
+use Material-UI which is one of the most used libraries with prebuilded components
 
 ## Available Scripts
 
