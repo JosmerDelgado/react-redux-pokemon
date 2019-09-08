@@ -1,1 +1,1 @@
-export default ["fire", "water", "grass"];
+export default ["all", "fire", "water", "grass"];

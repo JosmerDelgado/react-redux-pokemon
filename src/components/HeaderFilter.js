@@ -14,6 +14,9 @@ import { makeStyles } from "@material-ui/styles";
 const useStyles = makeStyles(theme => ({
   filterContainer: {
     border: "1px solid black"
+  },
+  searchButton: {
+    margin: "auto"
   }
 }));
 
@@ -42,8 +45,16 @@ const HeaderFilter = ({
           ))}
         </RadioGroup>
       </Grid>
-      <Grid item xs={12} md={3}>
-        <Button onClick={onClickSearch}>Search</Button>
+      <Grid
+        className={classes.searchButton}
+        item
+        xs={12}
+        md={3}
+        alignContent="center"
+      >
+        <Button onClick={onClickSearch} variant="contained" color="primary">
+          Search
+        </Button>
       </Grid>
     </Grid>
   );

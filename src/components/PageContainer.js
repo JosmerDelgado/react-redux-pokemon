@@ -9,13 +9,15 @@ const urlGenerator = endpoint => `https://pokeapi.co/api/v2/${endpoint}`;
 
 const PageContainer = ({ fetchData, isLoading: loading, hasError, data }) => {
   const [name, setName] = React.useState("");
-  const [searchType, setSearchType] = React.useState("fire");
+  const [searchType, setSearchType] = React.useState("all");
   const [url, setUrl] = React.useState("https://pokeapi.co/api/v2/pokemon");
   const pagination = { next: data.next, previous: data.previous };
   const handleChange = e => setName(e.target.value);
   const handleTypeChange = e => setSearchType(e.target.value);
   const onClickSearch = () => {
-    const myUrl = urlGenerator(`type/${searchType}`);
+    const myUrl = urlGenerator(
+      searchType === "all" ? "pokemon" : `type/${searchType}`
+    );
     setUrl(myUrl);
   };
   const onClickUpdateList = nextUrl => () => {
@@ -41,7 +43,9 @@ const PageContainer = ({ fetchData, isLoading: loading, hasError, data }) => {
     name,
     isTypeFilter,
     pagination,
-    onClickUpdateList
+    onClickUpdateList,
+    pokemonCount: data.count,
+    fromId: url.match(/offset=(\d+)/) ? url.match(/offset=(\d+)/)[1] : 0
   };
 
   return (

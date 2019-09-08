@@ -4,7 +4,7 @@ import PageContainer from "./components/PageContainer";
 import { makeStyles } from "@material-ui/core";
 
 const useStyle = makeStyles(theme => ({
-  pageContainter: {
+  layoutContainer: {
     width: "80%",
     minWidth: "300px",
     maxWidth: "1000px",
@@ -16,7 +16,7 @@ function App() {
   const classes = useStyle();
   return (
     <div className={"App"}>
-      <div className={classes.pageContainter}>
+      <div className={classes.layoutContainer}>
         <PageContainer />
       </div>
     </div>
