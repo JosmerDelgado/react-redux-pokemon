@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 import {
   Grid,
   TextField,
@@ -10,6 +11,13 @@ import {
 } from "@material-ui/core";
 import pokemonTypes from "../constants/pokemonTypes";
 import { makeStyles } from "@material-ui/styles";
+import { urlGenerator } from "../utils/urlHelper";
+import {
+  pokemonTypeSelected,
+  pokemonFilterName,
+  pokemonFetchData,
+  setUrl
+} from "../actions/items";
 
 const useStyles = makeStyles(theme => ({
   filterContainer: {
@@ -21,12 +29,30 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const HeaderFilter = ({
-  name,
-  handleChange,
-  searchType,
-  handleTypeChange,
-  onClickSearch
+  updateUrl: setUrl,
+  type: searchType,
+  setTypeSelected,
+  setFilterName,
+  filterName: name,
+  setNewUrl
 }) => {
+  // const [name, setName] = React.useState("");
+  // const [searchType, setSearchType] = React.useState("all");
+  const handleChange = e => setFilterName(e.target.value);
+  const handleTypeChange = e => {
+    const selectedType = e.target.value;
+    const myUrl = urlGenerator(
+      selectedType === "all" ? "pokemon" : `type/${selectedType}`
+    );
+    setTypeSelected(selectedType);
+    setNewUrl(myUrl);
+  };
+  const onClickSearch = () => {
+    const myUrl = urlGenerator(
+      searchType === "all" ? "pokemon" : `type/${searchType}`
+    );
+    setNewUrl(myUrl);
+  };
   const classes = useStyles();
   return (
     <Grid container className={classes.filterContainer}>
@@ -52,12 +78,28 @@ const HeaderFilter = ({
         md={3}
         alignContent="center"
       >
-        <Button onClick={onClickSearch} variant="contained" color="primary">
+        {/* <Button onClick={onClickSearch} variant="contained" color="primary">
           Search
-        </Button>
+        </Button> */}
       </Grid>
     </Grid>
   );
 };
 
-export default HeaderFilter;
+const mapStateToProps = state => ({
+  type: state.pokemonTypeSelected,
+  filterName: state.pokemonFilterName
+});
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setTypeSelected: url => dispatch(pokemonTypeSelected(url)),
+    setFilterName: name => dispatch(pokemonFilterName(name)),
+    setNewUrl: url => dispatch(setUrl(url))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(HeaderFilter);

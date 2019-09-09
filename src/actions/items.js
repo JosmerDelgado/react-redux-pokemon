@@ -1,3 +1,22 @@
+export function setUrl(val) {
+  return {
+    type: "URL",
+    url: val
+  };
+}
+export function pokemonFilterName(name) {
+  return {
+    type: "POKEMON_FILTER_NAME",
+    filterName: name
+  };
+}
+export function pokemonTypeSelected(type) {
+  return {
+    type: "POKEMON_TYPE_SELECTED",
+    typeSelected: type
+  };
+}
+
 export function pokemonsLoading(bool) {
   return {
     type: "POKEMONS_IS_LOADING",
@@ -21,6 +40,7 @@ export function pokemonsFetchDataSuccess(pokemons) {
 export function pokemonFetchData(url) {
   return dispatch => {
     dispatch(pokemonsLoading(true));
+    dispatch(pokemonsFetchDataSuccess({}));
     const fetchPokemons = async myUrl => {
       try {
         const response = await fetch(myUrl);

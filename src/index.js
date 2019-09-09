@@ -5,8 +5,9 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import configureStore from "./store/configureStore";
+import { urlGenerator } from "./utils/urlHelper";
 
-const store = configureStore();
+const store = configureStore({ url: urlGenerator("pokemon") });
 
 ReactDOM.render(
   <Provider store={store}>

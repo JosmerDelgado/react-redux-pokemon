@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
 import {
   Grid,
   CircularProgress,
@@ -12,6 +13,9 @@ import {
   Typography
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/styles";
+import { pokemonFetchData, setUrl } from "../actions/items";
+import pokemonTypes from "../constants/pokemonTypes";
+import { getOffset } from "../utils/stringHelper";
 
 const StyledTableCell = withStyles(theme => ({
   head: {
@@ -23,16 +27,39 @@ const StyledTableCell = withStyles(theme => ({
   }
 }))(TableCell);
 
-const TableList = ({
-  loading,
-  pokemonCount,
-  pokemons,
-  name,
-  isTypeFilter,
-  pagination,
-  onClickUpdateList,
-  fromId
-}) => {
+const TableList = ({ url, filterName: name, setNewUrl, type }) => {
+  const [loading, setLoading] = React.useState(false);
+  const [data, setData] = React.useState({});
+  useEffect(() => {
+    setLoading(true);
+    const fetchPokemons = async myUrl => {
+      try {
+        const response = await fetch(myUrl);
+        if (!response.ok) {
+          throw Error("Error Fetching Pokemons");
+        }
+        setLoading(false);
+        const json = await response.json();
+        setData(json);
+      } catch (error) {
+        console.log("Error: ", error);
+      }
+    };
+    fetchPokemons(url);
+  }, [url]);
+  const isTypeFilter = type !== pokemonTypes[0];
+  const onClickUpdateList = nextUrl => () => {
+    setNewUrl(nextUrl);
+  };
+  const pokemonCount = data.count;
+  const pokemonNames = (filtered, pokemonList) =>
+    filtered
+      ? pokemonList && pokemonList.pokemon && pokemonList.pokemon.name
+      : pokemonList.name;
+  const pokemons = (isTypeFilter ? data.pokemon : data.results) || [];
+  const pagination = { next: data.next, previous: data.previous };
+  const fromId = getOffset(pagination.next || "");
+
   return (
     <>
       <Table>
@@ -50,18 +77,13 @@ const TableList = ({
             pokemons
               .filter(val =>
                 name && val
-                  ? !(isTypeFilter
-                      ? val && val.pokemon && val.pokemon.name
-                      : val.name
-                    ).indexOf(name)
+                  ? !pokemonNames(isTypeFilter, val).indexOf(name)
                   : true
               )
               .map((value, keys) => (
                 <TableRow>
                   <StyledTableCell>
-                    {isTypeFilter
-                      ? value && value.pokemon && value.pokemon.name
-                      : value.name}
+                    {pokemonNames(isTypeFilter, value)}
                   </StyledTableCell>
                 </TableRow>
               ))
@@ -76,8 +98,9 @@ const TableList = ({
         Prev
       </Button>
       <span>
-        {`${fromId}-${parseInt(fromId) +
-          parseInt(pokemons.length)} of ${pokemonCount || pokemons.length}`}
+        {`${parseInt(fromId) -
+          parseInt(pokemons.length)}-${fromId} of ${pokemonCount ||
+          pokemons.length}`}
       </span>
       <Button
         onClick={onClickUpdateList(pagination.next)}
@@ -89,4 +112,22 @@ const TableList = ({
   );
 };
 
-export default TableList;
+const mapStateToProps = state => ({
+  url: state.url,
+  type: state.pokemonTypeSelected,
+  data: state.pokemons,
+  hasError: state.pokemonsHasError,
+  isLoading: state.pokemonsLoading,
+  filterName: state.pokemonFilterName
+});
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setNewUrl: url => dispatch(setUrl(url))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TableList);
