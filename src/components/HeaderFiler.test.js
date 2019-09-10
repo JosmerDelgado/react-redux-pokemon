@@ -19,7 +19,6 @@ describe("HeaderFilter Tests", () => {
         handleTypeChange={handleTypeChangeMock}
       />
     );
-    console.log("wrappper:::", wrapper.debug());
     findInputByTestId(wrapper, "text").simulate("change", "data");
     expect(handleChangeMock).toBeCalled();
     wrapper.unmount();
