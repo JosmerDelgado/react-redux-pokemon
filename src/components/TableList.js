@@ -8,14 +8,12 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableBody,
-  TablePagination,
-  Typography
+  TableBody
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/styles";
-import { pokemonFetchData, setUrl } from "../actions/items";
 import pokemonTypes from "../constants/pokemonTypes";
 import { getOffset } from "../utils/stringHelper";
+import { setUrl } from "../actions/items";
 
 const StyledTableCell = withStyles(theme => ({
   head: {
@@ -27,38 +25,25 @@ const StyledTableCell = withStyles(theme => ({
   }
 }))(TableCell);
 
-const TableList = ({ url, filterName: name, setNewUrl, type }) => {
-  const [loading, setLoading] = React.useState(false);
-  const [data, setData] = React.useState({});
-  useEffect(() => {
-    setLoading(true);
-    const fetchPokemons = async myUrl => {
-      try {
-        const response = await fetch(myUrl);
-        if (!response.ok) {
-          throw Error("Error Fetching Pokemons");
-        }
-        setLoading(false);
-        const json = await response.json();
-        setData(json);
-      } catch (error) {
-        console.log("Error: ", error);
-      }
-    };
-    fetchPokemons(url);
-  }, [url]);
-  const isTypeFilter = type !== pokemonTypes[0];
-  const onClickUpdateList = nextUrl => () => {
-    setNewUrl(nextUrl);
-  };
-  const pokemonCount = data.count;
+const TableList = ({
+  loading,
+  name,
+  onClickUpdateList,
+  isTypeFilter,
+  data = {}
+}) => {
   const pokemonNames = (filtered, pokemonList) =>
     filtered
       ? pokemonList && pokemonList.pokemon && pokemonList.pokemon.name
       : pokemonList.name;
   const pokemons = (isTypeFilter ? data.pokemon : data.results) || [];
+  const pokemonCount = data.count || pokemons.length;
   const pagination = { next: data.next, previous: data.previous };
   const fromId = getOffset(pagination.next || "");
+  const offsetNumber =
+    parseInt(fromId) - parseInt(pokemons.length) < 0
+      ? 0
+      : parseInt(fromId) - parseInt(pokemons.length);
 
   return (
     <>
@@ -68,43 +53,43 @@ const TableList = ({ url, filterName: name, setNewUrl, type }) => {
             <StyledTableCell>Pokemon Name</StyledTableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
-          {loading ? (
-            <Grid item xs={12}>
-              <CircularProgress />
-            </Grid>
-          ) : (
-            pokemons
+        {loading ? (
+          <Grid item xs={12}>
+            <CircularProgress />
+          </Grid>
+        ) : (
+          <TableBody>
+            {pokemons
               .filter(val =>
                 name && val
                   ? !pokemonNames(isTypeFilter, val).indexOf(name)
                   : true
               )
               .map((value, keys) => (
-                <TableRow>
-                  <StyledTableCell>
+                <TableRow key={`table-${keys}`}>
+                  <StyledTableCell test-id="pokemon-list">
                     {pokemonNames(isTypeFilter, value)}
                   </StyledTableCell>
                 </TableRow>
-              ))
-          )}
-        </TableBody>
+              ))}
+          </TableBody>
+        )}
       </Table>
 
       <Button
         onClick={onClickUpdateList(pagination.previous)}
         disabled={!pagination.previous}
+        test-id="prev-button"
       >
         Prev
       </Button>
       <span>
-        {`${parseInt(fromId) -
-          parseInt(pokemons.length)}-${fromId} of ${pokemonCount ||
-          pokemons.length}`}
+        {`${offsetNumber}-${fromId || pokemons.length} of ${pokemonCount}`}
       </span>
       <Button
         onClick={onClickUpdateList(pagination.next)}
         disabled={!pagination.next}
+        test-id="next-button"
       >
         Next
       </Button>
@@ -112,22 +97,4 @@ const TableList = ({ url, filterName: name, setNewUrl, type }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  url: state.url,
-  type: state.pokemonTypeSelected,
-  data: state.pokemons,
-  hasError: state.pokemonsHasError,
-  isLoading: state.pokemonsLoading,
-  filterName: state.pokemonFilterName
-});
-
-const mapDispatchToProps = dispatch => {
-  return {
-    setNewUrl: url => dispatch(setUrl(url))
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TableList);
+export default TableList;

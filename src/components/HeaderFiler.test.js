@@ -2,38 +2,39 @@ import React from "react";
 import { mount } from "enzyme";
 import HeaderFilter from "./HeaderFilter";
 
+const findInputByTestId = (wrapper, testId) => {
+  return wrapper.find(`input[type="${testId}"]`);
+};
+
 describe("HeaderFilter Tests", () => {
-  const onClickSearchMock = jest.fn();
   const handleTypeChangeMock = jest.fn();
   const handleChangeMock = jest.fn();
-  const headerProps = {
-    name: "",
-    handleChange: handleChangeMock,
-    searchType: "",
-    handleTypeChange: handleTypeChangeMock,
-    onClickSearch: onClickSearchMock
-  };
 
-  it("onClickSearch test when is clicked the button", () => {
-    const wrapper = mount(<HeaderFilter {...headerProps} />);
-    wrapper.find("button").simulate("click");
-    expect(onClickSearchMock).toBeCalled();
-    wrapper.unmount();
-  });
   it("handleChange test when is change the input", () => {
-    const wrapper = mount(<HeaderFilter {...headerProps} />);
-    wrapper
-      .find("input")
-      .at(0)
-      .simulate("change", "data");
+    const wrapper = mount(
+      <HeaderFilter
+        searchType="all"
+        handleChange={handleChangeMock}
+        name=""
+        handleTypeChange={handleTypeChangeMock}
+      />
+    );
+    console.log("wrappper:::", wrapper.debug());
+    findInputByTestId(wrapper, "text").simulate("change", "data");
     expect(handleChangeMock).toBeCalled();
     wrapper.unmount();
   });
   it("handleTypeChange test when is change the type", () => {
-    const wrapper = mount(<HeaderFilter {...headerProps} />);
-    wrapper
-      .find("input")
-      .at(2)
+    const wrapper = mount(
+      <HeaderFilter
+        searchType="all"
+        handleChange={handleChangeMock}
+        name=""
+        handleTypeChange={handleTypeChangeMock}
+      />
+    );
+    findInputByTestId(wrapper, "radio")
+      .at(0)
       .simulate("change");
     expect(handleTypeChangeMock).toBeCalled();
     wrapper.unmount();

@@ -1,16 +1,15 @@
 import React from "react";
-import { connect } from "react-redux";
-import { pokemonFetchData, setUrl } from "../actions/items";
 import { Paper } from "@material-ui/core";
 import HeaderFilter from "./HeaderFilter";
 import TableList from "./TableList";
-import { urlGenerator } from "../utils/urlHelper";
+import HeaderFilterContainer from "./HeaderFilterContainer";
+import TableListContainer from "./TableListContainer";
 
 const PageContainer = () => {
   return (
     <Paper>
-      <HeaderFilter />
-      <TableList />
+      <HeaderFilterContainer />
+      <TableListContainer />
     </Paper>
   );
 };
